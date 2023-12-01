@@ -11,7 +11,7 @@ fn main() {
     let timeout = Duration::from_secs(1);
 
     // open TCP connection
-    let mut stream = TcpStream::connect("127.0.0.1").unwrap();
+    let mut stream = TcpStream::connect("127.0.0.1:5500").unwrap();
     stream.set_read_timeout(Some(timeout)).unwrap();
     stream.set_write_timeout(Some(timeout)).unwrap();
 
@@ -21,7 +21,7 @@ fn main() {
 
     // set 2 coils
     let mut request = Vec::new();
-    mreq.generate_set_coils_bulk(0, &[true, true], &mut request)
+    mreq.generate_set_coils_bulk(8, &[true, true], &mut request)
         .unwrap();
 
     // write request to stream
@@ -43,7 +43,7 @@ fn main() {
     mreq.parse_ok(&response).unwrap();
 
     // get coil values back
-    mreq.generate_get_coils(0, 2, &mut request).unwrap();
+    mreq.generate_get_coils(0, 5, &mut request).unwrap();
     stream.write(&request).unwrap();
     let mut buf = [0u8; 6];
     stream.read_exact(&mut buf).unwrap();
