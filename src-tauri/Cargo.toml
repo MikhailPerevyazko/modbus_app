@@ -16,7 +16,7 @@ tauri-build = { version = "1.5", features = [] }
 tauri = { version = "1.5", features = ["shell-open"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-modbus = "1.0"
+rmodbus = "1.0"
 clap = { version = "4.4.10", features = ["derive"] }
 
 [features]
