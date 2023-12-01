@@ -4,10 +4,43 @@
 use std::io::{Read, Write};
 use std::net::TcpStream;
 use std::time::Duration;
-
+use clap:: {
+    Args,
+    Parser
+};
+use serde::{Serialize, Deserialize};
+use std::path::PathBuf;
+// use tauri::Manager;
+// use std::fs;
+use serde_json;
+use serde_yaml;
 use rmodbus::{client::ModbusRequest, guess_response_frame_len, ModbusProto};
 
 fn main() {
+    let args = Args::parse();
+    let home_dir = std::env::var("HOME").unwrap();
+    let file_path = match args.file_path {
+        Some(path) => path,
+        None => PathBuf::from(home_dir)
+            .join(".config")
+            .join("simple_modbusclient")
+            .join("config.yaml"),
+    };
+    tauri::Builder::default()
+        .manage(PathBuf(file_path))
+        .setup(|app| {
+            #[cfg(debug_assertions)] // only include this code on debug builds
+            {
+                let window = app.get_window("main").unwrap();
+                window.open_devtools();
+                window.close_devtools();
+            }
+            Ok(())
+        })
+        .invoke_handler(tauri::generate_handler![])
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+
     let timeout = Duration::from_secs(1);
 
     // open TCP connection
@@ -61,4 +94,18 @@ fn main() {
     for i in 0..data.len() {
         println!("{} {}", i, data[i]);
     }
+}
+
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct  ModbusItems {
+    pub host: String,
+    pub port: i32,
+    pub pause: i32,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct VariablesItems {
+    pub var_name: String,
+    pub storage_type: String,
 }
