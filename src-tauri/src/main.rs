@@ -11,6 +11,8 @@ use serde_json;
 use serde_yaml;
 use clap::Parser;
 
+mod new_module;
+
 
 fn main() {
     let args = Args::parse();
@@ -98,9 +100,12 @@ impl PathState {
 #[tauri::command]
 fn config_serialize(state: tauri::State<PathState>) -> String {
     let file = std::fs::File::open(state.path()).unwrap();
-    let json_config: Config = serde_yaml::from_reader(file).unwrap();
-    let config = serde_json::to_string_pretty(&json_config).unwrap();
-    config
+    // let json_config: Config = serde_yaml::from_reader(file).unwrap();
+    // let config = serde_json::to_string_pretty(&json_config).unwrap();
+    //println!("{}", config);
+    //return config
+    new_module::func();
+    
 }
 
 #[derive(Parser, Debug)]
@@ -109,3 +114,4 @@ struct Args {
     #[arg(short, long)]
     file_path: Option<PathBuf>,
 }
+
